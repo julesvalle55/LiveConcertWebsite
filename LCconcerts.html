@@ -5,82 +5,102 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Concert Search</title>
     <link rel="stylesheet" href="concertpage.css">
+    <link rel="stylesheet" href="homepage.css">
 </head>
-<body>
-    <div class="hero">
-        <ul>
-            <li><a href="LChomepage.html">HOME</a></li>
-            <li><a href="LCconcerts.html">CONCERTS</a></li>
-            <li><a href="#">VENUES</a></li>
-            <li><a href="#">POSTS</a></li>
-            <li><a href="#">PROFILE</a></li>
-        </ul>
+<body background="images/pexels-sebastian-ervi-866902-1763068.jpg">
     
+<nav>
+    <ul>
+        <li><a href="LChomepage.html">HOME</a></li>
+        <li><a href="LCconcerts.html" class="active">CONCERTS</a></li>
+        <li><a href="LCvenues.html">VENUES</a></li>
+    </ul>
+</nav>
 
-    <main>
-        <h1>Find Concerts Near You</h1>
-        <form id="cityForm">
-            <label for="city">Enter a City:</label>
-            <input type="text" id="city" name="city" required>
-            <button type="submit">Search</button>
-        </form>
+<h1>Find Concerts in Your City</h1>
 
-        <div id="concertResults">
-            <!-- Concert results will display here -->
-        </div>
-    </main>
-    </div>
-</body>
+<div>
+    <input type="text" id="cityInput" placeholder="Enter city name" />
+    <button class="button" onclick="searchConcerts()">Search</button>
+</div>
+
+<div id="results"></div> <!-- Container to display results -->
 
 <script>
-    document.getElementById('cityForm').addEventListener('submit', async function(event) {
-        event.preventDefault();
-        const city = document.getElementById('city').value;
-        await fetchConcerts(city);
-    });
+    async function searchConcerts() {
+        const apiKey = 'pO68DjphirYOEn60GCej6kV9Q6r207vN'; // Replace with your actual Ticketmaster API key
+        const city = document.getElementById('cityInput').value.toLowerCase();
 
-    async function fetchConcerts(city) {
-        const url = 'https://concerts-artists-events-tracker.p.rapidapi.com/artist/bio?artist_id=99';
-        const options = {
-            method: 'GET',
-            headers: {
-                'x-rapidapi-key': 'bb1012c0eemshf452b06146eb840p18a15ejsn2609543aea96',
-                'x-rapidapi-host': 'concerts-artists-events-tracker.p.rapidapi.com'
-            }
-        };
+        if (!city) {
+            alert("Please enter a city name");
+            return;
+        }
+
+        const url = `https://app.ticketmaster.com/discovery/v2/events?apikey=pO68DjphirYOEn60GCej6kV9Q6r207vN&keyword=music&unit=miles&locale=*&city=${city}`;
 
         try {
-            const response = await fetch(url, options);
-            const data = await response.json(); // Parse JSON directly
-            displayConcerts(data);
+            const response = await fetch(url);
+            const data = await response.json();
+
+            if (data._embedded && data._embedded.events) {
+                displayResults(data._embedded.events);
+            } else {
+                document.getElementById('results').innerHTML = 'No concerts found.';
+            }
         } catch (error) {
-            console.error('Error fetching concert data:', error);
+            console.error('Error fetching data:', error);
+            document.getElementById('results').innerHTML = 'An error occurred. Please try again later.';
         }
     }
 
-    function displayConcerts(data) {
-        const concertResults = document.getElementById('concertResults');
-        concertResults.innerHTML = ''; // Clear previous results
-
-        if (data && data.data && data.data.length > 0) {
-            data.data.forEach(event => {
-                const concertDiv = document.createElement('div');
-                concertDiv.classList.add('concert');
-
-                concertDiv.innerHTML = `
-                    <h2>${event.title}</h2>
-                    <p>Date: ${new Date(event.date).toLocaleDateString()}</p>
-                    <p>Location: ${event.venue_name}</p>
-                    <p>City: ${event.location.city}, ${event.location.country}</p>
-                `;
-
-                concertResults.appendChild(concertDiv);
-            });
-        } else {
-            concertResults.innerHTML = '<p>No concerts found for this city.</p>';
-        }
+    function formatTime(time) {
+        const [hour, minute] = time.split(':');
+        const hourNum = parseInt(hour);
+        const ampm = hourNum >= 12 ? 'PM' : 'AM';
+        const formattedHour = hourNum % 12 || 12; // Convert to 12-hour format, changing 0 to 12
+        return `${formattedHour}:${minute} ${ampm}`;
     }
 
+    function formatDate(dateString) {
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', options); // Format as "Month Day, Year"
+    }
+
+    function displayResults(events) {
+    const resultsContainer = document.getElementById('results');
+    resultsContainer.innerHTML = ''; // Clear previous results
+
+    events.forEach(event => {
+        const eventName = event.name;
+        const eventDate = formatDate(event.dates.start.localDate); // Use the new formatDate function
+        const eventTime = formatTime(event.dates.start.localTime);
+
+        // Find the first 16_9 ratio image
+        const eventImage = event.images.find(image => image.ratio === '16_9')?.url;
+
+        // Get venue details
+        const venue = event._embedded?.venues[0]; // Access the first venue from the _embedded field
+        const venueName = venue?.name || 'Venue not available';
+        const venueCity = venue?.city?.name || 'City not available';
+        const venuePostalCode = venue?.postalCode || 'Postal code not available';
+
+        // Create HTML for the event
+        const eventHTML = `
+            <div class="event">
+                <h2>${eventName}</h2>
+                <p style="color:black;">Date: ${eventDate}</p>
+                <p style="color:black;">Time: ${eventTime}</p>
+                <p style="color:black;">Venue Name: ${venueName}</p>
+                ${eventImage ? `<img src="${eventImage}" alt="${eventName}" width="300" />` : ''}
+            </div>
+        `;
+
+        // Append event HTML to the container
+        resultsContainer.innerHTML += eventHTML;
+    });
+}
 </script>
-</html>
 
+</body>
+</html>

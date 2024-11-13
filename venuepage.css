@@ -1,0 +1,88 @@
+        /* CSS for dropdown menu */
+        .dropdown-content {
+            display: none; /* Hidden by default */
+            position: absolute;
+            background-color: white;
+            min-width: 300px;
+            box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+            z-index: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+        }
+
+        .venue {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .venue-name {
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .venue-details {
+            margin-top: 10px;
+        }
+
+        .venue-details p {
+            margin: 5px 0;
+        }
+#venueInput {
+    width: 300px; /* Adjust the width of the input */
+    height: 40px; /* Adjust the height of the input */
+    font-size: 18px; /* Adjust the font size */
+    padding: 10px; /* Add padding inside the input */
+    margin-right: 10px; /* Space between input and button */
+    border-radius: 15px; /* Optional: rounded corners */
+    border: 2px solid #ccc; /* Optional: border style */
+}
+/* Container for each venue */
+.venue {
+    margin: 20px; /* Adds some space around each venue */
+    padding: 10px;
+    background-color: rgba(255, 255, 255, 0.8); /* Slightly transparent background */
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-width: 400px; /* Ensure the venue box doesn't get too wide */
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+.venue img {
+    width: 100%;  /* Makes image responsive */
+    height: auto; /* Maintain aspect ratio */
+    max-width: 300px; /* Limit the image size */
+    border-radius: 8px;
+    object-fit: cover; /* Ensures image covers the box without distortion */
+    margin-bottom: 15px; /* Adds some space below the image */
+}
+
+h2 {
+    font-size: 1.5rem;
+    margin: 10px 0;
+    color: #333;
+}
+
+p {
+    color: #555;
+    font-size: 1rem;
+    margin: 5px 0;
+}
+
+@media screen and (max-width: 768px) {
+    .venue {
+        max-width: 90%; /* Adjust width for smaller screens */
+        margin: 10px auto; /* Center content and reduce space */
+    }
+
+    h2 {
+        font-size: 1.3rem; /* Reduce heading size on smaller screens */
+    }
+
+    p {
+        font-size: 0.9rem; /* Adjust paragraph font size */
+    }
+}

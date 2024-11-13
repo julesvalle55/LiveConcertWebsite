@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Venue Search</title>
+    <link rel="stylesheet" href="concertpage.css">
+    <link rel="stylesheet" href="homepage.css">
+    <link rel="stylesheet" href="venuepage.css">
+</head>
+<body background="images/pexels-sebastian-ervi-866902-1763068.jpg">
+    
+<nav>
+    <ul>
+        <li><a href="LChomepage.html">HOME</a></li>
+        <li><a href="LCconcerts.html">CONCERTS</a></li>
+        <li><a href="LCvenues.html" class="active">VENUES</a></li>
+    </ul>
+</nav>
+
+<h1>Find Venues by Name</h1>
+
+<div>
+    <input type="text" id="venueInput" placeholder="Enter venue name" />
+    <button class="button" onclick="searchVenues()">Search</button>
+</div>
+
+<div id="results"></div> <!-- Container to display results -->
+
+<script>
+// Venue Search Function
+async function searchVenues() {
+    const apiKey = 'pO68DjphirYOEn60GCej6kV9Q6r207vN'; // Your actual Ticketmaster API key
+    const venueName = document.getElementById('venueInput').value.trim();
+
+    if (!venueName) {
+        alert("Please enter a venue name");
+        return;
+    }
+
+    const url = `https://app.ticketmaster.com/discovery/v2/venues?apikey=pO68DjphirYOEn60GCej6kV9Q6r207vN&keyword=${venueName}&locale=*&countryCode=US&preferredCountry=us`;
+
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+
+        if (data._embedded && data._embedded.venues) {
+            displayVenueResults(data._embedded.venues);
+        } else {
+            document.getElementById('results').innerHTML = 'No venues found.';
+        }
+    } catch (error) {
+        console.error('Error fetching data:', error);
+        document.getElementById('results').innerHTML = 'An error occurred. Please try again later.';
+    }
+}
+
+// Function to display venue results
+function displayVenueResults(venues) {
+    const resultsContainer = document.getElementById('results');
+    resultsContainer.innerHTML = ''; // Clear previous results
+
+    // Create a Set to store unique venue addresses
+    const uniqueAddresses = new Set();
+
+    venues.forEach(venue => {
+        const venueName = venue.name;
+
+        // Gather the available data for city, state, country, and address
+        const venueCity = venue.city?.name || null;
+        const venueState = venue.state?.name || null;
+        const venueCountry = venue.country?.name || null;
+        const venueAddress = venue.address?.line1 || null; // Use null if address is not available
+
+        // Check if all required fields (city, state, country, address) are available
+        if (venueCity && venueState && venueCountry && venueAddress) {
+            const fullAddress = `${venueAddress}, ${venueCity}, ${venueState}, ${venueCountry}`;
+
+            // Check if this address has already been displayed
+            if (!uniqueAddresses.has(fullAddress)) {
+                // Add the address to the Set to ensure it is not displayed again
+                uniqueAddresses.add(fullAddress);
+
+                // Find the first image with ratio 16_9
+                const venueImage = venue.images?.find(image => image.ratio === '16_9')?.url;
+
+                // Create HTML for the venue with location and address
+                const venueHTML = `
+                    <div class="venue">
+                        <h2>${venueName}</h2>
+                        <p style="color:black;">Address: ${venueAddress}, ${venueCity}, ${venueState}, ${venueCountry}</p>
+                        ${venueImage ? `<img src="${venueImage}" alt="${venueName} Image" />` : ''}
+                    </div>
+                `;
+
+                // Append venue HTML to the container
+                resultsContainer.innerHTML += venueHTML;
+            }
+        }
+    });
+}
+</script>
+
+</body>
+</html>
