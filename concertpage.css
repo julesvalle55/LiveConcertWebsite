@@ -46,6 +46,10 @@ nav ul li a{
     color: #fff;
     font-weight: 600;
 }
+.content h1:hover{
+    -webkit-text-stroke: 2px #fff;
+    color: transparent
+}
 .content a{
     text-decoration: none;
     display: inline-block;
@@ -56,23 +60,45 @@ nav ul li a{
     border-radius: 50px;
     margin-top: 20px;
 }
-.back-video{
-    position: absolute;
-    right: 0;
-    bottom: 0;
-    z-index: -1;
+
+/* concerts.css */
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
 }
 
-@media (min-aspect-ratio: 16/9){
-    .back-video{
-        width: 100%;
-        height: auto;
-    }
+header {
+    background-color: #333;
+    color: #fff;
+    padding: 10px;
+    text-align: center;
 }
 
-@media (max-aspect-ratio: 16/9){
-    .back-video{
-        width: auto;
-        height: 100%;
-    }
+header nav a {
+    color: white;
+    margin: 0 10px;
+    text-decoration: none;
+}
+
+main {
+    padding: 20px;
+    text-align: center;
+}
+
+form {
+    margin: 20px 0;
+}
+
+#concertResults {
+    margin-top: 20px;
+}
+
+.concert {
+    background-color: #f4f4f4;
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin: 10px 0;
+    text-align: left;
 }

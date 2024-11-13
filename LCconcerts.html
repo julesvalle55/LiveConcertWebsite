@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Concert Search</title>
+    <link rel="stylesheet" href="concertpage.css">
+</head>
+<body>
+    <div class="hero">
+        <ul>
+            <li><a href="LChomepage.html">HOME</a></li>
+            <li><a href="LCconcerts.html">CONCERTS</a></li>
+            <li><a href="#">VENUES</a></li>
+            <li><a href="#">POSTS</a></li>
+            <li><a href="#">PROFILE</a></li>
+        </ul>
+    
+
+    <main>
+        <h1>Find Concerts Near You</h1>
+        <form id="cityForm">
+            <label for="city">Enter a City:</label>
+            <input type="text" id="city" name="city" required>
+            <button type="submit">Search</button>
+        </form>
+
+        <div id="concertResults">
+            <!-- Concert results will display here -->
+        </div>
+    </main>
+    </div>
+</body>
+
+<script>
+    document.getElementById('cityForm').addEventListener('submit', async function(event) {
+        event.preventDefault();
+        const city = document.getElementById('city').value;
+        await fetchConcerts(city);
+    });
+
+    async function fetchConcerts(city) {
+        const url = 'https://concerts-artists-events-tracker.p.rapidapi.com/artist/bio?artist_id=99';
+        const options = {
+            method: 'GET',
+            headers: {
+                'x-rapidapi-key': 'bb1012c0eemshf452b06146eb840p18a15ejsn2609543aea96',
+                'x-rapidapi-host': 'concerts-artists-events-tracker.p.rapidapi.com'
+            }
+        };
+
+        try {
+            const response = await fetch(url, options);
+            const data = await response.json(); // Parse JSON directly
+            displayConcerts(data);
+        } catch (error) {
+            console.error('Error fetching concert data:', error);
+        }
+    }
+
+    function displayConcerts(data) {
+        const concertResults = document.getElementById('concertResults');
+        concertResults.innerHTML = ''; // Clear previous results
+
+        if (data && data.data && data.data.length > 0) {
+            data.data.forEach(event => {
+                const concertDiv = document.createElement('div');
+                concertDiv.classList.add('concert');
+
+                concertDiv.innerHTML = `
+                    <h2>${event.title}</h2>
+                    <p>Date: ${new Date(event.date).toLocaleDateString()}</p>
+                    <p>Location: ${event.venue_name}</p>
+                    <p>City: ${event.location.city}, ${event.location.country}</p>
+                `;
+
+                concertResults.appendChild(concertDiv);
+            });
+        } else {
+            concertResults.innerHTML = '<p>No concerts found for this city.</p>';
+        }
+    }
+
+</script>
+</html>
+
